@@ -24,3 +24,27 @@ export async function signup(req, res) {
     console.log("Erro ao cadastrar", e);
   }
 }
+
+export async function signin(req, res) {
+  const { email, password } = req.body;
+  try {
+    const result = await db.query("SELECT * FROM users WHERE email=$1", [
+      email,
+    ]);
+    const user = result.rows[0];
+
+    if (user && bcrypt.compareSync(password, user.password)) {
+      const token = uuid();
+      await db.query(`INSERT INTO sessions ("userId", token) VALUES ($1, $2)`, [
+        user.id,
+        token,
+      ]);
+      res.status(200).send(token);
+    } else {
+      return res.sendStatus(401);
+    }
+  } catch (e) {
+    res.sendStatus(500);
+    console.log("Erro ao entrar no app", e);
+  }
+}
