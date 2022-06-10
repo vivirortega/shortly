@@ -16,7 +16,7 @@
   "scripts": {
     "dev": "nodemon index.js",
     "prod": "node index.js",
-    "start": "node ./src/server.js"
+    "start": "node index.js"
   },
   "author": "",
   "license": "ISC",
