@@ -18,7 +18,7 @@ export async function validateToken(req, res, next) {
       console.log("erro na segunda validação", token);
       return res.sendStatus(401);
     }
-
+  
     const { userId } = checkUser.rows[0];
 
     res.locals.userId = userId;

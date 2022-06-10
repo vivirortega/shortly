@@ -51,7 +51,6 @@ export async function openURL(req, res) {
     if (!result.rows[0]) {
       return res.sendStatus(404);
     }
-    const url = result.rows[0].url;
 
     const updateVisits = await db.query(
       `UPDATE urls
@@ -61,9 +60,39 @@ export async function openURL(req, res) {
       [shortUrl]
     );
 
+    const url = result.rows[0].url;
     res.redirect(url);
   } catch (e) {
     console.log("erro ao abrir a url", e);
+    res.sendStatus(500);
+  }
+}
+
+export async function deleteURL(req, res) {
+  const { id } = req.params;
+  const { userId } = res.locals;
+
+  try {
+    const result = await db.query(`SELECT * FROM urls WHERE id=$1`, [id]);
+
+    if (!result.rows.length) {
+      console.log("erro na validação", id);
+      return res.sendStatus(404);
+      
+    }
+
+    if (result.rows[0].userId !== userId) {
+      return res.sendStatus(401);
+    }
+
+    await db.query(`DELETE FROM urls WHERE id=$1 AND "userId"=$2`, [
+      id,
+      userId,
+    ]);
+
+    res.sendStatus(204);
+  } catch (e) {
+    console.log("erro ao deletar a url", e);
     res.sendStatus(500);
   }
 }
