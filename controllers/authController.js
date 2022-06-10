@@ -27,6 +27,7 @@ export async function signup(req, res) {
 
 export async function signin(req, res) {
   const { email, password } = req.body;
+
   try {
     const result = await db.query("SELECT * FROM users WHERE email=$1", [
       email,
@@ -40,11 +41,12 @@ export async function signin(req, res) {
         token,
       ]);
       res.status(200).send(token);
+      console.log(user);
     } else {
       return res.sendStatus(401);
     }
   } catch (e) {
     res.sendStatus(500);
-    console.log("Erro ao entrar no app", e);
+    console.log("Erro ao entrar no app", e)
   }
 }
